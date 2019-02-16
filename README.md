@@ -57,7 +57,8 @@ The result of a datafaser run will be whatever the last step in its plan produce
 
 1. It can be a single number or text, that can be written into a file or shown on screen.
 2. It can as well be a large data structure, that can then be represented in some format such as `JSON` or written as records in a database.
-3. A list of results may be continuously streamed from streaming sources through a service running datafaser into some consumer, such as trading activities or patient health telemetry for associated response systems.
+3. Nested records can also be stored as directories where each field with a value other than a record will be written into a file of same name.
+4. A list of results may be continuously streamed from streaming sources through a service running datafaser into some consumer, such as trading activities or patient health telemetry for associated response systems.
 
 ### Data transformation plan
 
