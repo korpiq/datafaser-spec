@@ -209,7 +209,7 @@ None of the listed criteria must be fulfilled.
         parallel_handlers:
             - each: [ "long list", { key: { modulo: { divider: 2 } ]
               do: { [parallel task] }
-            - each: [ "long list", { key: { modulo: { divider: 3, remainder: 1 } ]
+            - each: [ "long list", { key: { modulo: { divider: 2, remainder: 1 } ]
               do: { [parallel task] }
         separate_subtask:
             with:
