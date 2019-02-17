@@ -10,7 +10,7 @@ Datafaser is a programming language limited to producing new data from existing 
 
 Run:
 
-    datafaser --from source.yaml --run greet.yaml --yaml
+    datafaser --from-file source.yaml --run-file greet.yaml --output-format=yaml
 
 Data source file `source.yaml` contents:
 
@@ -73,17 +73,19 @@ A plan (or "program written in datafaser language") consists of one or more step
 - A step without a selection nor production is valid, and all data just passes through it. (It may serve as, say, placeholder or comment.)
 
 Some methods will be specified for
+
 - using same data as input for multiple separate steps.
 - combining the results of multiple separate steps.
 
 ### Datafaser program runner
 
-Datafaser can be implemented in general-purpose languages (or perhaps one day in itself) as an interpreter, transpiler, or compiler. Interactive and visual interfaces may be created as well.
+Datafaser can be implemented as a set of libraries, server, or standalone utility program in general-purpose languages (or perhaps one day in itself) as an interpreter, transpiler, or compiler. Interactive or visual interfaces may be created on top of same libraries as well.
 
 Consider
- - streaming with possibility to optimize memory usage by tracking what data will no longer be used
- - ease and clarity of implementation to help adapting (each Datafaser release shall have a comprehensive test set)
- - efficiency classification of implementations to clarify tradeoffs
+
+- streaming with possibility to optimize memory usage by tracking what data will no longer be used
+- ease and clarity of implementation to help adapting (each Datafaser release shall have a comprehensive test set)
+- efficiency classification of implementations to clarify tradeoffs
 
 ### Errors
 
