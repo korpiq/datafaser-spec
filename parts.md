@@ -162,22 +162,79 @@ Matches any text or byte array with exactly given value appearing anywhere withi
 
 There are plenty more options to consider as potential selection criteria.
 
-#### Collections of selectors
+#### Combining selectors
 
-Multiple selectors may be collected together.
+Multiple selectors may be considered together for same entry.
 
 ##### All
 
+Each of the listed criteria must be fulfilled.
+
+    all: [list of separate criteria]
+
 ##### Some
 
+At least one of the listed criteria must be fulfilled.
+
+    some: [list of separate criteria]
+
 ##### None
+
+None of the listed criteria must be fulfilled.
+
+    none: [list of separate criteria]
 
 ## Composing results
 
 ### Composing field values
 
+#### Fill a text or structure
+
+    fill: "template with {{selector}} entries"
+
+    fill: [a list with selectors for values]
+
+    fill: [a map with templates for keys and selectors for values]
+
+#### Combine a value from parts
+
+    combine: [a list of selectors whose results are combined as text]
+
 ### Composing data structures
 
 ### Collecting results into records or single values instead of lists
+
+    each: []
+    with:
+        parallel_handlers:
+            - each: [ "long list", { key: { modulo: { divider: 2 } ]
+              do: { [parallel task] }
+            - each: [ "long list", { key: { modulo: { divider: 3, remainder: 1 } ]
+              do: { [parallel task] }
+        separate_subtask:
+            with:
+                separate_data: [ "some subdata" ]
+            do: { [first separate subtask] }
+        another_separate_subtask:
+            with:
+                separate_data: [ "other subdata" ]
+            do: { [second separate subtask] }
+    do:
+        fill:
+            all_data_combined:
+                some:
+                    path:
+                    - "parallel_handlers"
+                    - key: { range: {} }
+                    - key: { range: {} }
+                    path:
+                    - "separate_subtask"
+                    path:
+                    - "another_separate_subtask"
+
+TODO:
+
+- explain
+- figure out a way to scale dynamically
 
 ### Handling errors
