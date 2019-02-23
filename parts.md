@@ -1,5 +1,7 @@
 # Parts of datafaser language and setup
 
+This document turned out to go into too many details at once. I'll try another approach in another file.
+
 1. `Datafaser language` only describes how to transform data.
 2. `Datafaser setup` connects datafaser run to its environment.
 3. Both parts are required to be implemented by a datafaser runner.
