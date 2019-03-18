@@ -13,13 +13,13 @@ All parts of a `fase` are optional. An empty `fase` would pass its input as its 
       - {selector on the selected data}
 
     "do":
-        operation on selected data
+        {operation on selected data}
     "else":
-        operation to run for each part of input data that "each" selection excludes.
+        {operation to run for each part of input data that "each" selection excludes}
     "none":
-        operation to run when "each" selects no items.
+        {operation to run when "each" selects no items}
     "failing":
-        operation taken for errors that happen during this fase.
+        {operation taken for errors that happen during this fase}
 
 ## Selections in a fase
 
@@ -65,7 +65,39 @@ Excluding all data blocks the whole run:
     "without":
       - []
 
-## References to data in a fase
+## Actions in a fase
+
+Keyword `else` specifies an operation to run for each part of input data that the selection in `each` decides to skip.
+Keyword `none` specifies an operation to run once when `each` selects no data.
+Keyword `failing` specifies an operation to run once for each error that occurs during the selections or actions in the `fase`.
+
+### Do runs an operation
+
+Keyword `do` specifies how to produce output from the input data. That operation can combine many smaller operations into one.
+
+    "with":
+        "all": []
+    "do":
+        "quote":
+            "value": ["all"]
+
+### Else runs an operation for data not selected by each
+
+### None runs an operation when each selects no data
+
+### Failing runs on operation for each failure happening during the fase
+
+    "failing":
+      - "in": ["with","each","without","do","else","none","failing"]
+        "at": [selector]
+        "type": errortype
+        "do": action
+        "then":
+            "fail" to exit current list of fases,
+            "last" to end this fase, or
+            "next" to continue with next iteration of this fase
+
+## Referencing data
 
 ### Value
 
@@ -102,47 +134,13 @@ Operation `index` returns the last list entry number of a path of a value select
 
 Operation `iteration` returns the count of iterations of this fase run so far for its `each`.
 
-## Actions in a fase
-
-Keyword `do` specifies how to produce output from the input data. That operation can combine many smaller operations into one.
-Keyword `else` specifies an operation to run for each part of input data that the selection in `each` decides to skip.
-Keyword `none` specifies an operation to run once when `each` selects no data.
-Keyword `failing` specifies an operation to run once for each error that occurs during the selections or actions in the `fase`.
-
-### Do runs an operation
-
-    "text":
-      - literal text or number
-      - {selector for a field that contains a text or number}
-      ...
-
-### Else runs an operation for data not selected by each
-
-### None runs an operation when each selects no data
-
-### Failing runs on operation for each failure happening during the fase
-
-    "failing":
-      - "in": ["with","each","without","do","else","none","failing"]
-        "at": [selector]
-        "type": errortype
-        "do": action
-        "then":
-            "fail" to exit current list of fases,
-            "last" to end this fase, or
-            "next" to continue with next iteration of this fase
-
-## Actions
-
-### Value returns a named value
-
-    "value": "index"
+## Operations
 
 ### Fail produces an error
 
     "fail": { "user error": "something went awry" }
 
-### Quote produces its value
+### Quote produces value as given
 
 Use `quote` to produce a value of any type as is:
 
@@ -151,13 +149,21 @@ Use `quote` to produce a value of any type as is:
     "quote":
         "record field name": "record field value"
 
-#### Unquote runs code inside a quote
+#### Unquote allows operations inside a quote
 
-Use `unquote` to inject values into quotes:
+Use `unquote` to run operations inside quotes:
 
     "quote":
       - "Value of index is now: "
       - { "unquote": { "value": "index" } }
+
+#### Unquote literal can be produced as output key with record operation
+
+To include a record with "unquote" key, use "record" to build it:
+
+    "quote":
+      - "Next comes a record { unquote: true }: "
+      - { "unquote": { "record": [{ "key": "unquote", "value": true }] } }
 
 ### Join combines items of a list into a text
 
@@ -174,32 +180,61 @@ Alternate form that lets you specify a nonempty separator:
     "join":
         "parts": [...]
         "by": separator
+        "range": range
 
 ### Split produces a list from text
 
     "split":
         "text": [...]
         "by": separator
+        "range": range
 
 ### Keys produces a list of keys from a record
 
     "keys": [path]
-    "range": range
 
 ### Values produces a list of values from a record or list
 
     "values": [path]
-    "range": range
 
-### Items produces a list of key-value pairs from a collection
+### Fields produces a list of key-value pairs from a collection
 
-    "items": [path]
-    "range": range
+    "fields": [path]
 
-For each field in a record or list `items` produces a record:
+For each field in a record or list `fields` produces a record:
 
     "key": key
     "value": value
+
+### Record produces a record from a list of key-value pairs
+
+    "record":
+      - { "key": key, "value": value }
+      ...
+
+#### Insert adds new fields inside a record
+
+Inside a `record` operation, `insert` operation inserts fields of given record into it.
+
+    "record":
+      - { "insert": { "quote": { "key1": "value1", "key2": "value2" } } }
+      - { "key": key3, "value": value3 }
+      - { "insert": { "record: [{ "key": key4, "value": value4 }, { "key": key5, "value": value5 }] } }
+
+#### Replace replaces existing fields inside a record
+
+#### Merge adds or replaces fields inside a record
+
+### Range ensures limits on item producers
+
+Specify a range to limit how many items an operation should generate.
+An upper bound (specified by `max` or `below`) stops generation after that many items have been produced.
+A lower bound (specified by `min` or `above`) causes an error if the operation produced too few items.
+
+    "range":
+        "min": lower_bound_included | "above": lower_bound_excluded,
+        "max": upper_bound_included | "below": upper_bound_excluded
+        "do": {operation}
 
 ## Example fases
 
@@ -207,7 +242,7 @@ For each field in a record or list `items` produces a record:
 
     "do":
         "record":
-          - "insert": "value": []
+          - "insert": { "value": [] }
 
 ### Collect output records of previous fase into one text
 
